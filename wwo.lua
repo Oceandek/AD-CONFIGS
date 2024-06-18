@@ -4,70 +4,30 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local player = game.Players.LocalPlayer
 local username = player.Name
 
-local function updateGemCount()
+local function updateUser()
     local UIHandler = require(ReplicatedFirst.Classes.Class.UIHandler)
     local gemCount = UIHandler.Inventory.Currencies.Gems
 
-    local url = "http://192.168.0.141:8080/update-gems"
+    local url = "http://192.168.0.141:8080/update-user"
     local data = {
         Url = url,
         Method = "POST",
         Headers = {
             ["Content-Type"] = "application/json"
         },
-        Body = HttpService:JSONEncode({ gems = gemCount })
+        Body = HttpService:JSONEncode({ username = username, gems = gemCount, status = "online" })
     }
 
     local response = requests(data)
     if response.Success then
-        print("Gem count updated successfully")
+        print("User data updated successfully")
     else
-        warn("Failed to update gem count:", response.StatusMessage)
+        warn("Failed to update user data:", response.StatusMessage)
     end
 end
 
-local function updateUsername()
-    local url = "http://192.168.0.141:8080/update-username"
-    local data = {
-        Url = url,
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({ username = username })  -- Ensure username is correctly encoded
-    }
-
-    local response = requests(data)
-    if response.Success then
-        print("Username updated successfully")
-    else
-        warn("Failed to update username:", response.StatusMessage)
-    end
-end
-
-local function updateStatus()
-    local url = "http://192.168.0.141:8080/update-status"
-    local data = {
-        Url = url,
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({ username = username, status = "online" })
-    }
-
-    local response = requests(data)
-    if response.Success then
-        print("Status updated successfully")
-    else
-        warn("Failed to update status:", response.StatusMessage)
-    end
-end
-
-updateGemCount()
-updateUsername()
-updateStatus()
+updateUser()
 
 while wait(60) do
-    updateStatus()
+    updateUser()
 end
